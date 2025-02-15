@@ -1,0 +1,176 @@
+{% extends 'journal.html' %}
+{% block j %}
+<style>
+    table {
+    text-align: center
+    }
+    #rates {
+    width: 1.7rem;
+    height: 1.5rem;
+    color: black;
+    padding: 5px;
+    border-radius: 3px;
+    margin-right: 1rem;
+    margin-left: 1rem;
+    background: #c9c9c9;
+    }
+        #rates1 {
+    width: 1.7rem;
+    height: 1.5rem;
+    color: black;
+    padding: 5px;
+    border-radius: 3px;
+    margin-right: 1rem;
+    margin-left: 1rem;
+    background: #c9c9c9;
+    }
+            #rates2 {
+    width: 1.7rem;
+    height: 1.5rem;
+    color: black;
+    padding: 5px;
+    border-radius: 3px;
+    margin-right: 1rem;
+    margin-left: 1rem;
+    background: #c9c9c9;
+    }
+    #rates3 {
+    width: 1.7rem;
+    height: 1.5rem;
+    color: black;
+    padding: 5px;
+    border-radius: 3px;
+    margin-right: 1rem;
+    margin-left: 1rem;
+    background: #c9c9c9;
+    }
+    .send-button {
+  background-color: #4CAF50; /* Замените на желаемый голубой цвет */
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 10px;
+  float: right; /* Добавим кнопку вправо */
+  margin-right: 20px; /* Добавим немного отступа справа */
+  margin-bottom: 20px; /* Добавим немного отступа снизу */
+}
+    .knopkadata{
+        background-color: #4CAF50; /* Замените на желаемый голубой цвет */
+        color: white;
+        padding: 10px 20px; /* размер кнопки */
+        text-align: center;
+        text-decoration: none; /* Значение по умолчанию, ничего не меняется */
+        display: inline-block; /* свойство задает внутренний и внешний типы отображения элемента. */
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer; /* задет отступ элементы */
+        border-radius: 10px;
+        margin-right: 20px; /* Добавим немного отступа справа */
+        margin-bottom: 100px; /* Добавим немного отступа снизу */
+
+    }
+    .text{
+
+        background-color: rgba(76, 175, 80, 0.16);
+        border-radius: 10px;
+        padding: 10px 0.1px; /* размер кнопки */
+
+
+    }
+
+</style>
+    <div id="gradesTable" class="grades-table">
+      <table id="gradesTableContent">
+        <thead>
+          <tr>
+              <th>ФИО ученика</th>
+              {% for date in dates %}
+              <th scope="col">{{ date.0 }}</th>
+              {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+              <form method="post">
+                {% csrf_token %}
+                <tr>
+                    <td>{{ student.0 }} {{ student.2 }}</td>
+                      {% for date in dates %}
+                        {% if grades != 1 %}
+                            {% for grade in grades %}
+                                {%for j in grade%}
+                                    {% if j.0 == date.0 and j.1 == student.1 and j.2 > -1 %}
+                                        <td><input id="rates" type="text" name="{{ student.1 }}-{{ date.0 }}" maxlength="1" value="{{j.2}}"></td>
+                                    {% elif j.0 == date.0 and j.1 == student.1 %}
+                                        <td><input id="rates1" type="text" name="{{ student.1 }}-{{ date.0 }}" maxlength="1" value="0"></td>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                            {% else %}
+                                    <td><input id="rates2" type="text" name="{{ student.1 }}-{{ date.0 }}" maxlength="1" value="0"></td>
+                        {% endif %}
+                      {% endfor %}
+                </tr>
+                        {% endfor %}
+                  <input type="submit" value="Сохранить" class="send-button"/>
+                </form>
+        </tbody>
+      </table>
+<!--      <table id="gradesTableContent">-->
+<!--        <tr>-->
+<!--          <th>ФИО ученика</th>-->
+<!--          {% for date in dates %}-->
+<!--            <th>{{ date }}</th>-->
+<!--          {% endfor %}-->
+<!--        </tr>-->
+<!--        {% for student in students %}-->
+<!--          {% for i in student %}-->
+<!--          <tr>-->
+<!--              <td>{{ i }}</td>-->
+<!--            {% for date in dates %}-->
+<!--              <td><input type="text" name="{{ student.id }}-{{ date }}"></td>-->
+<!--            {% endfor %}-->
+<!--          {% endfor %}-->
+<!--          </tr>-->
+<!--        {% endfor %}-->
+<!--      </table>-->
+    </div>
+
+    <!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <input class="text" id="date-input" type="CharField" >
+    <button class="knopkadata" id="add-date-btn">Добавить дату</button>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#add-date-btn').click(function() {
+                var date = $('#date-input').val();
+                $.ajax({
+                    type: "POST",
+                    url: "/add_lesson_date/",  // Укажите URL-путь к представлению, которое обрабатывает добавление даты урока
+                    data: {date: date, csrfmiddlewaretoken: '{{ csrf_token }}'},
+                    success: function(response) {
+                        alert('Дата успешно добавлена!');
+                        // Дополнительные действия после успешного добавления даты
+                    },
+                    error: function() {
+                        alert('Произошла ошибка при добавлении даты урока!');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+{% endblock %}

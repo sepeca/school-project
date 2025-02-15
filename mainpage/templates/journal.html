@@ -1,0 +1,57 @@
+{% extends 'index.html' %}
+{% block content %}
+    <style>
+body {
+height: 1000px;
+background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68));
+}
+      .tab {
+        display: none;
+      }
+      #sb {
+        margin-bottom: 10px;  /* Здесь можно задать нужный вам размер отступа */
+      }
+      #pb {
+        padding: 10px;
+      }
+    </style>
+    <div id="pb">
+        {% for class in classes %}
+          <button class="btn btn-success " onclick="openTab(event, {{class.id}})">{{class.name}}</button>
+        {% endfor %}
+    </div>
+
+    {% for class in classes %}
+      <div id="{{class.id}}" class="tab">
+        {% for subject in unique_subjects %}
+            {% if class.id == subject|last %}
+                {% for i in subject %}
+                    {% if class.id != i %}
+                        <button id="sb" class="btn btn-secondary" onclick="openSubject(event, '{{i}}', '{{class.id}}')">{{i}}</button>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    {% block j %}
+    {% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function openTab(evt, tabName) {
+        var i, tabcontent;
+        tabcontent = document.getElementsByClassName("tab");
+        for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+        }
+        document.getElementById(tabName).style.display = "block";
+      }
+
+      function openSubject(evt, subjectName, classId) {
+        var gradesTable = document.getElementById('gradesTable');
+        window.location.href = `/class-journal/?class_id=${classId}&subject_name=${subjectName}`
+        // Логика для заполнения таблицы оценок данными
+      }
+    </script>
+{% endblock %}

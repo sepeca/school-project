@@ -1,0 +1,44 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<style>
+.container {
+    width: 80%; /* Ширина контейнера */
+    margin: 0 auto; /* Центрирование контейнера */
+    text-align: justify; /* Выравнивание текста по ширине */
+}
+
+.container::after {
+    content: '';
+    display: inline-block;
+    width: 100%; /* Создание пустого блока для "выравнивания" текста */
+}
+#new {
+    background: rgba(53, 159, 103, 0.22);
+    padding: 7px;
+    border-radius: 30px;
+    margin-bottom: 2px;
+    /*backdrop-filter: blur(3px);*/
+    }
+
+</style>
+
+<div id = "new" class="container">
+    <h1>Новости</h1>
+    {% for article in articles %}
+        <div class="article">
+            <h4><a style="color:#0c6b3c;" href="{% url 'article' article.id %}">{{ article.title }}</a></h4>
+            <p>{{ article.get_short_text }}</p>
+        </div>
+            <html>
+<style>
+  body {
+ height: 1000px;
+background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68));
+}
+</style>
+<body>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<style>
+  /* Общие стили */
+  .bg-light {
+    background-color: #ffffff;
+  }
+  .text-primary {
+    color: #36421c;
+    padding: 10px;/* "внутренний отступ"*
+
+  }
+  .form-control {
+    color: #8c8c8c;
+    font-size: 2em; /* Увеличиваем размер шрифта для лучшей читаемости */
+    padding: 15px; /* Увеличиваем внутренний отступ для полей ввода */
+  }
+  .btn-primary {
+    background-color: #b4c98b;
+    border-color: #c2c2c2;
+    font-size: 2em; /* Увеличиваем размер шрифта для кнопки */
+    padding: 10px 340px; /* Увеличиваем внутренний отступ для кнопки */
+  }
+
+#qwe{
+
+    background: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    border-radius: 50px;
+    backdrop-filter: blur(3px);
+    }
+
+  /* Зависит от размера изображения */
+  @media screen and (max-width: 640px){
+	img.bg {
+	  left: 50%;
+	  margin-left: -320px;
+	}
+  }
+}
+
+  /* Адаптация для мобильных устройств */
+  @media (max-width: 576px) {
+    .vh-100 {
+      height: auto; /* Автоматическая высота для лучшего отображения на мобильных устройствах */'
+      width: auto;
+    }
+    .col-md-4 {
+      max-width: 100%; /* Максимальная ширина для колонки на маленьких экранах */
+    }
+    .rounded {
+      border-radius: 15px ; /* Более заметные закругления для контейнера */
+    }
+    .shadow-lg {
+      box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1); /* Небольшая тень для лучшей видимости на мобильных устройствах */
+    }
+    .text-primary {
+      font-size: 2em; /* Увеличиваем размер заголовка для лучшей читаемости */
+    }
+    .form-control {
+      margin-bottom: 15px; /* Увеличиваем отступ между полями */
+    }
+
+</style>
+
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+
+    <div>
+        <div id=qwe class=" shadow-lg p-5">
+
+            <div class="text-center mb-4">
+                <h3 class="text-success">Авторизация</h3>
+            </div>
+            <div class="p-4">
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <form action="{% url 'login' %}" method="post">
+
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-success"><i class="bi bi-person-plus-fill text-"></i></span>
+                            <input type="text" class="form-control" name="username" placeholder="Username">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-success"><i class="bi bi-key-fill text-white"></i></span>
+                            <input type="password" class="form-control" name="password" placeholder="Пароль">
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button class="btn btn-success" type="submit">Войти</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<html>
+<style>
+body {
+  background-image: url('/static/1.jpg');
+  background-repeat: no-repeat; /* фон-повтор */
+  background-attachment: fixed;/* фон-вложение */
+  background-size: cover; /* размер фона: обложка */
+}
+
+</style>
+<body>
+{% endblock %}

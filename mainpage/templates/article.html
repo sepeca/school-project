@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    {{ article.title }}
+{% endblock %}
+
+
+{% block content %}
+<style>
+body {
+height: 1000px;
+background: rgba(152, 204, 177, 0.41);
+}
+    .container {
+    max-width: 800px;/* Ширина контейнера */
+    margin: 0 auto;/* Центрирование контейнера */
+}
+
+.container pre {
+    display: inline-block;
+    text-align: left;
+    word-wrap: break-word; /* Перенос слов */
+
+}
+
+#d{
+    /* Добавим отступы от текста до краев блока */
+  padding: 20px;
+  /* Изменим цвет фона */
+  background: rgba(47, 187, 108, 0.45);
+    border-radius: 30px;
+    margin-bottom: 2px;
+
+
+}
+
+
+</style>
+<div class="container">
+    <h1>{{ article.title }}</h1>
+    <div id="d" class="article">
+        <p>{{ article.text }}</p>
+    </div>
+    <br><br>
+</div>
+
+{#    action="{% url 'article' %}"#}
+
+
+{% endblock %}

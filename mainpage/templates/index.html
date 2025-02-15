@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Школьный сайт</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Дополнительные стили -->
+    <style>
+    .navbar {
+        background-color: rgb(53, 159, 103) !important; /* Устанавливаем цвет фона шапки с помощью !important для усиления стиля */
+    }
+    .nav-link {
+        padding: 20 px 20px;
+    }
+    /* Дополнительные стили */
+
+@media (max-width: 576px) {
+  .navbar-collapse {
+          background-color: #359f67 !important; /* Устанавливаем цвет фона шапки с помощью !important для усиления стиля */
+    position: fixed;
+    top: 50px;
+    left: 1px;
+    width: 100%; /* Растягиваем панель по ширине экрана */
+    height: 30%;
+    max-height: 100vh; /* Ограничиваем высоту до высоты экрана */
+    background-color: #ffffff; /* Цвет фона панели */
+    border-bottom: 1px solid #d6d6d6; /* Добавляем границу справа для отделения от основного контента */
+    padding: 10px; /* Добавляем отступы внутри панели */
+    transition: transform 0.3s ease; /* Добавляем плавную анимацию */
+    transform: translateY(-100%); /* По умолчанию панель выезжает за левую границу экрана */
+    z-index: 1000;
+  }
+
+  .navbar-collapse.show {
+    transform: translateY(0);
+  }
+
+  .navbar-collapse ul {
+    padding: 0; /* Убираем отступ слева для списка ссылок */
+    margin: 0; /* Убираем отступ снизу */
+  }
+
+  .navbar-nav {
+    width: 100%; /* Устанавливаем ширину навигационной панели 100% ширины родительского элемента */
+    display: flex;
+    flex-direction: column; /* Располагаем элементы вертикально */
+    padding: 0; /* Убираем отступ слева */
+    margin: 0; /* Убираем отступ снизу */
+  }
+
+  .navbar-nav .nav-link {
+    padding: 5px 5px; /* Устанавливаем отступы для ссылок */
+    margin: 0; /* Убираем внешний отступ у ссылок */
+  }
+}
+
+
+
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Школьный сайт</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="navbar-collapse collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Новости</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/schedule">Расписание</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/journal">Журнал</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/lk/login">Личный кабинет</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/form-ivent">Участвовать в конкурсе</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Подключение Bootstrap с помощью CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

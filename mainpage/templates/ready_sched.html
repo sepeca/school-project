@@ -1,0 +1,18 @@
+ <div id="schedule-table">
+      <div class="row">
+        <!-- Поменяем цикл для отображения -->
+        {% for day in schedule %}
+          <div class="col">
+            <h3>{{ day.day }}</h3>  <!-- Отображаем название дня -->
+            <!-- Отобразим уроки для данного дня -->
+            <p>{{ day.lesson_1 }}</p>
+            <p>{{ day.lesson_2 }}</p>
+            <p>{{ day.lesson_3 }}</p>
+            <p>{{ day.lesson_4 }}</p>
+            <p>{{ day.lesson_5 }}</p>
+            <p>{{ day.lesson_6 }}</p>
+            <p>{{ day.lesson_7 }}</p>
+          </div>
+        {% endfor %}
+      </div>
+ </div>

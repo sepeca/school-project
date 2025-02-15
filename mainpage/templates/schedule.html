@@ -1,0 +1,49 @@
+{% extends 'index.html' %}
+{% block content %}
+<style>
+ body {
+height: 1000px;
+background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68));
+ }
+  h1, h2, h3 {
+    font-family: Arial, sans-serif; /* Изменяем шрифт для заголовков */
+    color: #57b081; /* Изменяем цвет текста заголовков */
+    text-align: center;
+  }
+  .row {
+    margin-bottom: 20px; /* Добавляем отступ между строками */
+  }
+  .col {
+    background-color: #f4f4f4; /* Изменяем цвет фона блоков расписания */
+    border: 1px solid #ccc; /* Добавляем обводку вокруг блоков расписания */
+    padding: 10px; /* Добавляем отступ внутрь блоков расписания */
+    border-radius: 5px; /* Делаем блоки расписания более закругленными */
+  }
+  p {
+    font-size: 16px; /* Изменяем размер текста уроков */
+    margin: 5px 0; /* Добавляем небольшой отступ между уроками */
+  }
+</style>
+<div class="container">
+  <h1>Общее расписание</h1>
+  {% for class in classes %}
+    <h2>{{ class.name }}</h2>
+    <div class="row">
+      {% for day in schedule %}
+        {% if day.class_field_id == class.id %}
+          <div class="col">
+            <h3>{{ day.get_day_display }}</h3>
+            <p>{{ day.lesson_1 }}</p>
+            <p>{{ day.lesson_2 }}</p>
+            <p>{{ day.lesson_3 }}</p>
+            <p>{{ day.lesson_4 }}</p>
+            <p>{{ day.lesson_5 }}</p>
+            <p>{{ day.lesson_6 }}</p>
+            <p>{{ day.lesson_7 }}</p>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
