@@ -2,42 +2,102 @@
 
 {% block content %}
 <style>
+    body {
+        background-image: url('/static/gradient_school_image.png');
+        background-repeat: no-repeat; /* фон-повтор */
+        background-attachment: fixed;/* фон-вложение */
+        background-size: cover; /* размер фона: обложка */
+     }
+/* Контейнер новостей */
 .container {
-    width: 80%; /* Ширина контейнера */
-    margin: 0 auto; /* Центрирование контейнера */
-    text-align: justify; /* Выравнивание текста по ширине */
+    max-width: 800px; /* Оптимальная ширина */
+    width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+    background: rgba(53, 159, 103, 0);
+    border-radius: 20px;
+    text-align: justify;
 }
 
-.container::after {
-    content: '';
-    display: inline-block;
-    width: 100%; /* Создание пустого блока для "выравнивания" текста */
+/* Заголовок */
+h1 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 15px;
 }
-#new {
-    background: rgba(53, 159, 103, 0.22);
-    padding: 7px;
-    border-radius: 30px;
-    margin-bottom: 2px;
-    /*backdrop-filter: blur(3px);*/
-    }
+
+/* Кнопка "Опубликовать новость" */
+.publish-link {
+    display: block;
+    width: fit-content;
+    margin: 10px auto;
+    padding: 10px 15px;
+    background-color: #0c6b3c;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.publish-link:hover {
+    background-color: #095c33;
+}
+
+/* Стиль блока новостей */
+.article {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 2px 2px 10px rgba(243, 234, 215, 0.9);
+}
+
+/* Заголовок новости */
+.article h4 {
+    margin-bottom: 5px;
+}
+
+.article h4 a {
+    color: #0c6b3c;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.article h4 a:hover {
+    text-decoration: underline;
+}
+
+/* Текст новости */
+.article p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Фон страницы */
 
 </style>
 
-<div id = "new" class="container">
+<!-- Контейнер новостей -->
+<div class="container">
     <h1>Новости</h1>
+
+    <!-- Кнопка "Опубликовать новость" -->
+    <a class="publish-link" href="/publish_news">Опубликовать новость</a>
+
+    <!-- Вывод новостей -->
     {% for article in articles %}
         <div class="article">
-            <h4><a style="color:#0c6b3c;" href="{% url 'article' article.id %}">{{ article.title }}</a></h4>
+            <h4>
+                <a href="{% url 'article' article.id %}">{{ article.title }}</a>
+            </h4>
             <p>{{ article.get_short_text }}</p>
         </div>
-            <html>
-<style>
-  body {
- height: 1000px;
-background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68));
-}
-</style>
-<body>
     {% endfor %}
 </div>
 

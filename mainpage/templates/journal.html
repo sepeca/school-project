@@ -1,57 +1,222 @@
 {% extends 'index.html' %}
+{% load filters %}
+{% load ru_date %}
+
 {% block content %}
-    <style>
+<style>
 body {
-height: 1000px;
-background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68));
+        background-image: url('/static/gradient_no_blur_image.png');
+        background-repeat: no-repeat; /* фон-повтор */
+        background-attachment: fixed;/* фон-вложение */
+        background-size: cover; /* размер фона: обложка */
+     }
+/* Центрирование заголовка */
+h1 {
+    text-align: center;
 }
-      .tab {
-        display: none;
-      }
-      #sb {
-        margin-bottom: 10px;  /* Здесь можно задать нужный вам размер отступа */
-      }
-      #pb {
-        padding: 10px;
-      }
-    </style>
-    <div id="pb">
-        {% for class in classes %}
-          <button class="btn btn-success " onclick="openTab(event, {{class.id}})">{{class.name}}</button>
-        {% endfor %}
+
+/* Центрирование кнопок четвертей */
+.centered-btn-group {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+/* Легенда стилей + кнопки выбора типа */
+.legend-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.legend-item, .type-btn {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 5px 15px;
+    border-radius: 5px;
+    border: none;
+    transition: 0.2s;
+    font-weight: bold;
+}
+
+/* Цвета для кнопок и легенды */
+.hw, .type-btn[data-type="HW"] { background-color: yellow; }
+.clw, .type-btn[data-type="ClW"] { background-color: lightgreen; }
+.sw, .type-btn[data-type="SW"] { background-color: lightblue; }
+.cw, .type-btn[data-type="CW"] { background-color: lightcoral; }
+
+/* Подсветка активной кнопки */
+.type-btn.active {
+    outline: 2px solid black;
+}
+
+/* Окрашивание оценок в таблице */
+.hw-cell { background-color: yellow; }
+.clw-cell { background-color: lightgreen; }
+.sw-cell { background-color: lightblue; }
+.cw-cell { background-color: lightcoral; }
+.default-cell { background-color: #cccccc}
+
+/* Выравнивание всех столбцов */
+.table-responsive {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+th, td {
+    min-width: 80px;
+    max-width: 80px;
+    text-align: center;
+}
+
+/* Исправление select */
+td select {
+    width: 100%;
+    height: 30px;
+    text-align: center;
+    padding: 3px;
+    font-size: 16px;
+}
+
+/* Исправление наложения стилей на первый столбец */
+th:first-child, td:first-child {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 2;
+    min-width: 180px;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+}
+</style>
+
+<div class="container">
+    <h1>Журнал: {{ subject_obj.name }} - {{ class_obj.number }} класс</h1>
+
+    <!-- Легенда стилей + кнопки выбора типа работы -->
+    <div class="legend-container">
+        <button type="button" class="type-btn" data-type="HW">Домашняя работа</button>
+        <button type="button" class="type-btn" data-type="ClW">Классная работа</button>
+        <button type="button" class="type-btn" data-type="SW">Самостоятельная работа</button>
+        <button type="button" class="type-btn" data-type="CW">Контрольная работа</button>
     </div>
 
-    {% for class in classes %}
-      <div id="{{class.id}}" class="tab">
-        {% for subject in unique_subjects %}
-            {% if class.id == subject|last %}
-                {% for i in subject %}
-                    {% if class.id != i %}
-                        <button id="sb" class="btn btn-secondary" onclick="openSubject(event, '{{i}}', '{{class.id}}')">{{i}}</button>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endfor %}
-      </div>
-    {% endfor %}
+    <!-- Блок кнопок для выбора четверти -->
+    <div class="centered-btn-group">
+        <div class="btn-group" role="group">
+            {% for quarter in quarters %}
+                <a href="?quarter={{ quarter.name }}"
+                   class="btn {% if selected_quarter_id == quarter.name %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    {{ quarter.get_name_display }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
 
-    {% block j %}
-    {% endblock %}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      function openTab(evt, tabName) {
-        var i, tabcontent;
-        tabcontent = document.getElementsByClassName("tab");
-        for (i = 0; i < tabcontent.length; i++) {
-          tabcontent[i].style.display = "none";
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" id="selectedType" name="selected_type" value="">
+
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="position: sticky; left: 0; background: white; z-index: 2;">Фамилия Имя</th>
+                        {% for lesson_date in lesson_dates %}
+                            <th id="date-{{ lesson_date|date:'Y-m-d' }}"
+                                {% if lesson_date == today %} style="background-color: #f8d7da;"
+                                {% else %} style="background-color: white;"
+                                {% endif %}>
+                                {{ lesson_date|ru_date:"d MMM" }}<br>
+                                ({{ lesson_date|ru_date:"EEE"|lower }})
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td style="position: sticky; left: 0; background: white; z-index: 1;">{{ student.last_name }} {{ student.first_name }}</td>
+                        {% for lesson_date in lesson_dates %}
+                            {% with grade_data=grades_dict|get_item:student.id|get_item:lesson_date %}
+                                {% if grade_data %}
+                                    {% with mark=grade_data.mark type=grade_data.type %}
+                                        <td id="cell-{{ lesson_date|date:'Y-m-d' }}"
+                                            class="{% if type == 'HW' %}hw-cell
+                                                   {% elif type == 'ClW' %}clw-cell
+                                                   {% elif type == 'SW' %}sw-cell
+                                                   {% elif type == 'CW' %}cw-cell
+                                                   {% else %}default-cell{% endif %}">
+                                            <select class="form-control mark-input"
+                                                name="mark_{{ student.id }}_{{ lesson_date|date:'Y-m-d' }}">
+                                                <option value="" {% if not mark %}selected{% endif %}>—</option>
+                                                {% for m, label in mark_choices %}
+                                                <option value="{{ m }}" {% if mark == m %}selected{% endif %}>
+                                                    {{ m }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    {% endwith %}
+                                {% else %}
+                                    <td>
+                                        <select class="form-control mark-input"
+                                            name="mark_{{ student.id }}_{{ lesson_date|date:'Y-m-d' }}">
+                                            <option value="" selected>—</option>
+                                            {% for m, label in mark_choices %}
+                                            <option value="{{ m }}">{{ m }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <button type="submit" class="btn btn-success">Сохранить</button>
+    </form>
+</div>
+
+<!-- Скрипт для прокрутки таблицы вправо к последней дате -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let tableContainer = document.querySelector(".table-responsive");
+        let lastDateCell = document.querySelector("th:last-of-type");
+
+        if (tableContainer && lastDateCell) {
+            tableContainer.scrollLeft = lastDateCell.offsetLeft - 50;
         }
-        document.getElementById(tabName).style.display = "block";
-      }
 
-      function openSubject(evt, subjectName, classId) {
-        var gradesTable = document.getElementById('gradesTable');
-        window.location.href = `/class-journal/?class_id=${classId}&subject_name=${subjectName}`
-        // Логика для заполнения таблицы оценок данными
-      }
-    </script>
+        // Логика выбора типа работы
+        let selectedType = "";
+        const typeButtons = document.querySelectorAll(".type-btn");
+        const hiddenInput = document.getElementById("selectedType");
+
+        typeButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                typeButtons.forEach(btn => btn.classList.remove("active"));
+                this.classList.add("active");
+
+                selectedType = this.getAttribute("data-type");
+                hiddenInput.value = selectedType;
+                console.log("Выбранный тип:", selectedType);
+            });
+        });
+
+        document.querySelector("form").addEventListener("submit", function (event) {
+            if (!hiddenInput.value) {
+                alert("Выберите тип работы перед сохранением!");
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+
 {% endblock %}
+

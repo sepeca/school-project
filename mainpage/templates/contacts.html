@@ -1,0 +1,110 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    body {
+      height: 1000px;
+      background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68));
+    }
+    h2{
+        text-align: center;
+    }
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    .top-section {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .school-photo {
+        flex: 2;
+        max-height: 400px;
+        overflow: hidden;
+    }
+
+    .school-photo img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+    .map-container {
+        flex: 1;
+        height: 400px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .contacts-section {
+        background-color: white;
+        width: 100%;
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .contacts-section h2 {
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container">
+    <!-- Верхний блок с фото и картами -->
+    <div class="top-section">
+        <!-- Фото школы (оранжевый прямоугольник) -->
+        <div class="school-photo">
+            <img src="{% static '1.jpg' %}" alt="Фото школы">
+        </div>
+
+        <!-- Яндекс.Карта (коричневый прямоугольник) -->
+        <div class="map-container">
+            <iframe
+                    src="https://yandex.ru/map-widget/v1/?ll=40.488830%2C46.172440&z=17&pt=40.488830,46.172440,pm2rdl"
+                   width="100%" height="400" frameborder="0">
+            </iframe>
+
+        </div>
+    </div>
+
+    <!-- Контакты (зеленый прямоугольник) -->
+    <div class="contacts-section">
+        <h2>Адрес</h2>
+
+        <p id->353000, Краснодарский край,Новопокровский район, станица Новоивановская, ул. Школьная, д.58</p>
+
+        <h2>Контакты</h2>
+
+        <h3>Директор</h3>
+        {% if director.last_name %}
+            <p>{{ director.last_name }} {{ director.first_name }} {{ director.third_name }}</p>
+            <p>Телефон: {{ director.telephone }}</p>
+        {% else %}
+            <p>Директор не найден.</p>
+        {% endif %}
+
+        <h3>Заместители директора</h3>
+        {% if deputy_directors %}
+            <ul>
+                {% for deputy in deputy_directors %}
+                    <li>
+                        {{ deputy.last_name }} {{ deputy.first_name }} {{ deputy.third_name }}
+                        <br>Телефон: {{ deputy.telephone }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Заместители директора не найдены.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ title }}</h1>
+
+    {% for subject_id, data in subject_classes_map.items %}
+        <div class="subject-block">
+            <h2>{{ data.name }}</h2>  <!-- Отображение названия предмета -->
+            <ul>
+                {% for class_number in data.classes %}
+                <li>
+                    <a class="class-link" href="{% url url_name subject_id=subject_id class_id=class_number %}">
+                        {{ class_number }} класс
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+
+<style>
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .subject-block {
+        background: #f4f4f4;
+        border-left: 5px solid #0c6b3c;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    h2 {
+        color: #0c6b3c;
+    }
+    body {
+        background-image: url('/static/blurred_image_radius_3.png');
+        background-repeat: no-repeat; /* фон-повтор */
+        background-attachment: fixed;/* фон-вложение */
+        background-size: cover; /* размер фона: обложка */
+     }
+</style>
+
+{% endblock %}

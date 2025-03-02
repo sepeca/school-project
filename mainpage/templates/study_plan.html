@@ -1,0 +1,61 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url('/static/gradient_upscaled_image.png');
+        background-repeat: no-repeat; /* фон-повтор */
+        background-attachment: fixed;/* фон-вложение */
+        background-size: cover; /* размер фона: обложка */
+     }
+/* Центрирование блока */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+     /* Центрирование по высоте */
+}
+
+/* Контейнер учебного плана */
+.container {
+    max-width: 700px; /* Оптимальная ширина */
+    width: 90%;
+    padding: 20px;
+    background: rgba(243, 234, 215, 0.9);
+    border-radius: 20px;
+    text-align: center; /* Выравнивание текста */
+}
+
+/* Заголовок */
+h1 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+/* Текст учебного плана */
+p {
+    font-size: 18px;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+/* Автор учебного плана */
+.creator {
+    margin-top: 15px;
+    font-size: 16px;
+    color: #555;
+    font-style: italic;
+}
+</style>
+
+<div class="wrapper">
+    <div class="container">
+        <h1>Учебный план: {{ subject_name }} - {{ class_name }} класс</h1>
+
+        <p>{{ plan }}</p>
+
+        <h4 class="creator">{{ last_name }} {{ first_name }} {{ third_name }} ({{ role }})</h4>
+    </div>
+</div>
+
+{% endblock %}

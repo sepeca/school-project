@@ -5,7 +5,7 @@
     body {
       font-family: Arial, sans-serif; /* Используемый шрифт для текста на странице */
       height: 1000px;
-background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68));
+      background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68));
     }
     .profile-container {
       border: 4px solid #359f67; /* Цвет рамки */
@@ -20,36 +20,11 @@ background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202,
       display: flex;
       align-items: center;
       margin-bottom: 40px; /* Добавляем отступ снизу для расстояния между блоками */
-    }
-    .profile-image {
-      margin-right: 30px;
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      object-fit: cover; /* Устанавливаем, чтобы изображение полностью занимало свою область и обрезалось при необходимости */
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Добавляем тень для изображения */
-      border: 4px solid #359f67;
-    }
-  .details {
-    font-size: 24px;
-    margin-left: 70px;
-    display: flex;
-    justify-content: space-between; /* Размещаем имя и фамилию по обе стороны блока */
-    border: 2px solid #359f67; /* Добавляем рамку вокруг блока */
-    padding: 10px; /* Добавляем внутренний отступ внутри рамки */
-    border-radius: 10px; /* Делаем скругленные углы для рамки */
-    margin-top: 20px; /* Добавляем отступ сверху для разделения блоков */
-    background-color: #f9f9f9;
-  }
 
-    #l_name {
-      margin-left: 10px; /* Добавляем отступ слева для фамилии */
+      justify-content: center;
+      height: 80vh; /* Центрирование по высоте */
     }
-    .news-form {
-      text-align: center;
-      padding: 20px;
-      border-top: 2px solid #45b97b;
-    }
+
     form label {
       display: block; /* Делаем метку блочным элементом для удобного отображения */
       margin-bottom: 5px; /* Добавляем отступ между метками и полями ввода */
@@ -75,75 +50,42 @@ background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202,
     form input[type="submit"]:hover {
       background-color: #359f67;
     }
-
-        .logout-button {
-      position: absolute; /* Позиционируем кнопку абсолютно внутри родительского контейнера */
-      top: 10px; /* Отступ от верхнего края */
-      right: 10px; /* Отступ от правого края */
-      padding: 10px 20px; /* Размер кнопки */
-      background-color: rgba(248, 64, 52, 0.82); /* Цвет фона кнопки */
-      color: #fff; /* Цвет текста кнопки */
-      border: none; /* Удаление границы */
-      border-radius: 5px; /* Скругление углов */
-      cursor: pointer; /* Изменение курсора при наведении */
-      font-weight: bold; /* Жирный шрифт */
-    }
-    .logout-button:hover {
-  background-color: #d32b27; /* Изменяем цвет фона при наведении */
-}
 @media (max-width: 576px) {
-  .profile-container {
-    width: 100%; /* контейнер профиля на всю ширину на экранах меньшего размера */
-    padding: 20px; /*  отступы для лучшей компоновки на маленьких экранах */
-  }
+
   .container {
     flex-direction: column; /*  изображение и детали вертикально на экранах меньшего размера */
     text-align: center; /* Выровнять содержимое по центру */
+    width: 100%; /* контейнер профиля на всю ширину на экранах меньшего размера */
+    padding: 20px; /*  отступы для лучшей компоновки на маленьких экранах */
   }
-  .profile-image {
-    margin-right: 0; /* Удалите правое поле для изображения */
-    margin-bottom: 0px; /* Добавьте нижнее поле для разделения */
-    margin-top: 20px; /* Добавьте нижнее поле для разделения */
-  }
-  .details {
-    margin-left: 0; /* Уберите левое поле для деталей */
-  }
-  .logout-button {
-    position: static; /* Сбросьте положение кнопки выхода из системы */
-    margin-top: 20px; /* Добавьте верхнее поле для разделения */
 
-  }
-  .news-form {
-    padding: 10px; /* Уменьшите отступы для формы */
-  }
   form input[type="submit"] {
     width: 100%; /* Сделайте кнопку отправки на всю ширину */
   }
 }
   </style>
 <body>
-  <div class="profile-container"  style="position: relative;">
-      <a class="logout-button" href="{% url 'logout' %}">Выйти из профиля</a> <!-- Добавляем кнопку "Выход" -->
-    <div class="container">
-      {% load static %}
-      <img src="/static/p1.jpg" class="profile-image">
-      <div class="details">
-        <p id="name">{{name}}</p>
-        <p id="l_name">{{l_name}}</p>
-      </div>
+  <div class="container" style="max-width: 700px; margin-top: 50px;">
+    <div class="card shadow-lg">
+        <div class="card-body text-center">
+            <!-- Иконка пользователя -->
+            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                 alt="User Avatar" width="120" class="mb-3">
+
+            <!-- Информация о пользователе -->
+            <h2 class="card-title">{{ full_name }}</h2>
+            <p class="text-muted"><strong>Роль:</strong> {{ user.get_role_display }}</p>
+
+            <hr>
+
+            <p><strong>Дата рождения:</strong> {{ birthday }}</p>
+            <p><strong>Телефон:</strong> {{ tel|default:"Не указан" }}</p>
+            <p><strong>Email:</strong> {{ email|default:"Не указан" }}</p>
+            <p><strong>{{ class_info }}</strong></p>
+
+            <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Выйти из профиля</a>
+        </div>
     </div>
-<div class="news-form">
-  <form method="POST">
-    {% csrf_token %}
-    <label>Заголовок:</label><br>
-    {{ form.title }}
-    <br>
-    <label>Текст:</label><br>
-    {{ form.text }}
-    <br>
-    <input type="submit" value="Опубликовать"> <!-- перемещенная кнопка "опубликовать" -->
-  </form>
-</div>
 </div>
 </body>
 {% endblock %}

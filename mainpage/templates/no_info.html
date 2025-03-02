@@ -1,0 +1,53 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<style>
+    body {
+      height: 1000px;
+      background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68));
+    }
+.container {
+    max-width: 800px; /* Ограничение ширины для лучшей читаемости */
+    width: 90%; /* Гибкая ширина */
+    margin: 20px auto; /* Центрирование и отступ сверху */
+    padding: 20px;
+    background: rgba(53, 159, 103, 0.22);
+    border-radius: 20px;
+    text-align: justify;
+}
+
+h1 {
+    text-align: center; /* Заголовок по центру */
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+.publish-link {
+    display: block;
+    width: fit-content;
+    margin: 10px auto;
+    padding: 10px 15px;
+    background-color: #0c6b3c;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.publish-link:hover {
+    background-color: #095c33;
+}
+</style>
+
+<div class="container">
+    <h1>{{message}}</h1>
+    {% if redirect_button %}
+            <h4>
+                <a class='publish-link' href="{{redirect_button}}">{{ redirect_message }}</a>
+            </h4>
+    {% endif %}
+</div>
+
+{% endblock %}

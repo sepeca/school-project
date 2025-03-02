@@ -1,101 +1,147 @@
 from django.db import models
-from django.contrib.auth.models import User
-
-
-class Lesson(models.Model):
-    date = models.CharField(max_length=10)  # Новое поле с правильным форматом даты
-    # Другие поля для урока
-
-    def __str__(self):
-        return str(self.date)
+from django.conf import settings
+from datetime import date
 
 class Class(models.Model):
-    name = models.CharField(max_length=20)
+    number = models.PositiveSmallIntegerField(unique=True, default=1)  # Номер класса (1-11)
 
     def __str__(self):
-        return self.name
+        return f"{self.number} класс"  # Строковое представление для админки и вывода
 
+    class Meta:
+        ordering = ['number']  # Упорядочивание по возрастанию номера
 
-class CustomUser(models.Model):  # Универсальная модель для учеников, учителей и высшего состава
-    role_choices = (
-        ('pupil', "ученик"),
-        ('teacher', "учитель"),
-        ('deputy director', "завуч"),
-        ('director', "директор")
-    )
+class Subject(models.Model):
+    """ Школьный предмет (Математика, Физика и т.д.) """
 
-    role = models.CharField(max_length=20, choices=role_choices)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    third_name = models.CharField(max_length=50)  # Отчество
-
-    # Связь учеников с одним классом
-    class_name = models.ForeignKey(
-        Class,
-        on_delete=models.CASCADE,
-        null=True,  # Чтобы поле было пустым для учителей
-        blank=True
-    )
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} ({self.get_role_display()})"
+        return f'{self.name}'
 
 class ClassTeacher(models.Model):
-    """
-    Промежуточная таблица для связи учителей и классов.
-    Один учитель может преподавать в нескольких классах.
-    В одном классе может быть несколько учителей.
-    """
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'teacher'})
-    class_field = models.ForeignKey(Class, on_delete=models.CASCADE)
+    """ Промежуточная таблица: учитель -> класс -> предмет """
+    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                limit_choices_to={'role': 'teacher'})
+
+    class_name = models.ForeignKey(Class, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='teacher_subject')  # Учитель ведет конкретный предмет в классе
 
     def __str__(self):
-        return f"{self.teacher} -> {self.class_field}"
+        return f"{self.teacher} - {self.class_name} ({self.subject})"
 
-class Journal(models.Model):
-    student_id = models.IntegerField()  # Поле для хранения id студента
-    lesson_date = models.CharField(max_length=12)  # Поле для хранения даты занятия
-    subject = models.CharField(max_length=100)  # Поле для хранения предмета
-    grade = models.PositiveSmallIntegerField(default=0) # Поле для хранения предмета
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['class_name', 'subject'], name='unique_class_subject')
+        ]
+
+class SubjectPlanCreator(models.Model):
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
+                                limit_choices_to={'role__in': ['teacher', 'deputy director', 'director']})
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    class_name = models.ForeignKey(Class, on_delete=models.CASCADE)
+    plan = models.TextField(blank=True)
 
     def __str__(self):
-        return f"{self.student_id} - {self.subject} - {self.lesson_date}"
+        return f'Учебный план {self.subject} - {self.creator} ({self.class_name})'
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['class_name', 'subject'], name='unique_plan_subject')
+        ]
 
+class Mark(models.Model):
+    """ Таблица для хранения оценок """
+    MARK_CHOICES = [
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+    ]
 
-class Schedule(models.Model):
-    day_choices = (
-        ('monday', 'Понедельник'),
-        ('tuesday', 'Вторник'),
-        ('wednesday', 'Среда'),
-        ('thursday', 'Четверг'),
-        ('friday', 'Пятница'),
-        ('saturday', 'Суббота'),
+    TYPE_CHOICES = [
+        ('HW', 'Домашнее задание'),
+        ('ClW', 'Классная работа'),
+        ('SW', 'Самостоятельная работа'),
+        ('CW', 'Контрольная работа')
+    ]
+
+    mark = models.PositiveSmallIntegerField(choices=MARK_CHOICES)  # Оценка
+    date = models.DateField(default=date.today)  # Дата выставления оценки
+    type = models.CharField(max_length=3, choices=TYPE_CHOICES)  # Тип работы
+
+    pupil = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        limit_choices_to={'role': 'pupil'},
+        related_name="marks_pupil"
     )
 
-    class_field = models.ForeignKey(Class, on_delete=models.CASCADE)
-    day = models.CharField(max_length=10, choices=day_choices)
-    lesson_1 = models.CharField(max_length=50)
-    lesson_2 = models.CharField(max_length=50)
-    lesson_3 = models.CharField(max_length=50)
-    lesson_4 = models.CharField(max_length=50)
-    lesson_5 = models.CharField(max_length=50)
-    lesson_6 = models.CharField(max_length=50)
-    lesson_7 = models.CharField(max_length=50)
+    teacher = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        limit_choices_to={'role': 'teacher'},
+        related_name="marks_teacher"
+    )
+
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.CASCADE,
+        related_name="marks_subject"
+    )
+
+    class_field = models.ForeignKey(
+        Class,
+        on_delete=models.CASCADE,
+        related_name="marks_class"
+    )
 
     def __str__(self):
-        return f"{self.class_field} - {self.day}"
+
+        return f"{self.pupil.first_name} {self.pupil.last_name} - {self.subject.name}: {self.mark} ({self.type})"
+
+    class Meta:
+        ordering = ['date']
+
 
 
 class Article(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             limit_choices_to={'role__in': ['teacher', 'deputy director', 'director']})
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
     def get_short_text(self):
         if len(self.text) > 300:
-            return self.text[:300]
+            return f'{self.text[:300]}...'
         else:
             return self.text
+
+
+class Quarter(models.Model):
+    QUARTER_CHOICES = [
+        (1, "1 четверть"),
+        (2, "2 четверть"),
+        (3, "3 четверть"),
+        (4, "4 четверть"),
+    ]
+
+    name = models.PositiveSmallIntegerField(choices=QUARTER_CHOICES)  # Выбор номера четверти
+    begin = models.DateField()  # Дата начала
+    end = models.DateField()  # Дата окончания
+    year = models.PositiveSmallIntegerField()  # Учебный год
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(check=models.Q(begin__lt=models.F('end')), name='begin_before_end'),
+        ]
+        ordering = ["year", "name"]  # Сортировка по году и номеру четверти
+
+    def __str__(self):
+        return f"{dict(self.QUARTER_CHOICES).get(self.name, 'Неизвестно')} ({self.begin} - {self.end}, {self.year})"
+
+
+
