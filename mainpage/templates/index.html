@@ -1,39 +1,75 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Школьный сайт</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+    <style>
+
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/">Школьный сайт</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Школьный сайт</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <div class="navbar-collapse collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link" href="/news">Новости</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'classes_list' %}?type=grades">Журнал</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'classes_list' %}?type=plans">Уч. планы</a></li>
-                <li class="nav-item"><a class="nav-link" href="/lk/profile">Мой профиль</a></li>
-                <li class="nav-item"><a class="nav-link" href="/contacts">Контакты</a></li>
-            </ul>
-        </div>
-    </nav>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <!-- Центрирование навигации -->
+        <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="/news">Новости</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'classes_list' %}?type=grades">Журнал</a></li>
+            <li class="nav-item">
+                {% if user.role == 'pupil' or user.role == 'teacher' %}
+                <a class="nav-link" href="/schedule">Расписание</a>
+                {% else %}
+                <a class="nav-link" href="/schedule_list">Расписание</a>
+                {% endif %}
+            </li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'classes_list' %}?type=plans">Уч. планы</a></li>
+            <li class="nav-item"><a class="nav-link" href="/contacts">Контакты</a></li>
+            <li class="nav-item"><a class="nav-link" href="/about_us">О нас</a></li>
+        </ul>
 
-    <div class="container mt-4">
-        {% block content %}
-        {% endblock %}
+        <!-- Кнопка профиля справа -->
+        <ul class="navbar-nav profile-menu">
+            {% if user.is_authenticated %}
+            <!-- Если пользователь авторизован, показываем его аватар и ФИО как ссылку на профиль -->
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center" href="/lk/profile/">
+                    <!-- Аватар пользователя -->
+                    <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'p1.jpg' %}{% endif %}"
+                         alt="Аватар" class="rounded-circle" width="40" height="40" style="margin-right: 8px;">
+
+                    <!-- ФИО и роль пользователя -->
+                    <span>
+                        <strong style="color: black;">{{ user.last_name }} {{ user.first_name }} {{ user.third_name }}</strong><br>
+                        <span style="color: black;">{{ user.get_role_display }}</span>
+                    </span>
+                </a>
+            </li>
+            {% else %}
+            <!-- Если пользователь НЕ авторизован, показываем "Войти" -->
+            <li class="nav-item">
+                <a class="nav-link btn btn-outline-primary px-3" href="{% url 'login' %}">Войти</a>
+            </li>
+            {% endif %}
+        </ul>
     </div>
+</nav>
 
-    <!-- Подключение Bootstrap с помощью CDN -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<div class="container mt-4">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<!-- Подключение Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

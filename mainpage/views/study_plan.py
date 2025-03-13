@@ -14,7 +14,7 @@ def study_plan(request, subject_id, class_id):
         # Ищем учебный план по subject_id и class_id
         plan = (SubjectPlanCreator.objects.get(subject_id=subject_id, class_name_id=class_id))
 
-        return render(request, 'study_plan.html', {
+        return render(request, 'study_plans/study_plan.html', {
             'subject_name': plan.subject.name,
             'class_name': plan.class_name.number,
             'plan': plan.plan,
@@ -56,4 +56,4 @@ def publish_plan(request, subject_id, class_id):
     else:
         form = PublishPlan(user=request.user, subject=subject.id, class_name=class_name.id, instance=plan_instance)
 
-    return render(request, 'publish_plan.html', {'form': form, 'subject': subject, 'class_name': class_name})
+    return render(request, 'study_plans/publish_plan.html', {'form': form, 'subject': subject, 'class_name': class_name})

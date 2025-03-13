@@ -1,0 +1,159 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<style>
+    body {
+        min-height: 100vh;
+        background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68)) no-repeat fixed;
+        background-size: cover;
+    }
+
+    .container {
+        max-width: 800px;
+        width: 90%;
+        margin: 20px auto;
+        padding: 20px;
+        background: rgba(53, 159, 103, 0.22);
+        border-radius: 20px;
+        text-align: justify;
+    }
+
+    .publish-link {
+        display: block;
+        width: fit-content;
+        margin: 10px auto;
+        padding: 10px 15px;
+        background-color: #0c6b3c;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .publish-link:hover {
+        background-color: #095c33;
+    }
+
+    .title {
+        text-align: center;
+        padding-bottom: 2%;
+        padding-top: 2%;
+    }
+
+    .image-upload-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .image-upload-container .image-upload {
+        width: 48%;
+    }
+
+    .image-upload input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        cursor: pointer;
+    }
+
+    .multiple-images-preview {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .multiple-images-preview img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+</style>
+
+<div class="container">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <h4 class="title">Заголовок</h4>
+            {{ form.title }}
+        </div>
+
+        <div class="form-group">
+            <h4 class="title">Текст</h4>
+            {{ form.text }}
+        </div>
+
+        <div class="form-group">
+            <h4 class="title">Дата</h4>
+            {{ form.date }}
+        </div>
+
+        <div class="image-upload-container">
+            <div class="image-upload">
+                <input type="file" name="images" class="image-input" accept="image/*">
+            </div>
+        </div>
+
+        <div id="images-preview" class="multiple-images-preview"></div>
+
+        <button type="submit" class="publish-link">Опубликовать</button>
+    </form>
+</div>
+
+<script>
+    const imageContainer = document.querySelector('.image-upload-container');
+    const previewContainer = document.getElementById('images-preview');
+
+    // Функция для добавления нового поля загрузки
+    function addImageInput() {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('image-upload');
+
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.name = 'images';
+        input.classList.add('image-input');
+        input.accept = 'image/*';
+        input.addEventListener('change', handleImagePreview);
+
+        wrapper.appendChild(input);
+        imageContainer.appendChild(wrapper);
+    }
+
+    // Функция для предварительного просмотра изображения
+    function handleImagePreview(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                previewContainer.appendChild(img);
+                addImageInput(); // Добавляем новое поле
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Инициализация первого поля
+    document.querySelector('.image-input').addEventListener('change', handleImagePreview);
+</script>
+
+{% endblock %}

@@ -138,7 +138,9 @@ th:first-child, td:first-child {
                 <tbody>
                     {% for student in students %}
                     <tr>
-                        <td style="position: sticky; left: 0; background: white; z-index: 1;">{{ student.last_name }} {{ student.first_name }}</td>
+                        <td style="position: sticky; left: 0; background: white; z-index: 1;" data-student-id = '{{student.id}}'>
+                            {{ student.last_name }} {{ student.first_name }}
+                        </td>
                         {% for lesson_date in lesson_dates %}
                             {% with grade_data=grades_dict|get_item:student.id|get_item:lesson_date %}
                                 {% if grade_data %}
@@ -181,6 +183,9 @@ th:first-child, td:first-child {
 
         <button type="submit" class="btn btn-success">Сохранить</button>
     </form>
+    <div id="chat-container">
+    {% include 'journals/chat.html' %}
+    </div>
 </div>
 
 <!-- Скрипт для прокрутки таблицы вправо к последней дате -->
@@ -214,6 +219,17 @@ th:first-child, td:first-child {
                 alert("Выберите тип работы перед сохранением!");
                 event.preventDefault();
             }
+        });
+    });
+        document.querySelectorAll('[data-student-id]').forEach(studentCell => {
+        studentCell.addEventListener('click', function () {
+            const studentId = this.getAttribute('data-student-id');
+            fetch(`/chat/${studentId}/`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('chat-container').innerHTML = html;
+                    initializeChat()
+                });
         });
     });
 </script>

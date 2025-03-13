@@ -1,0 +1,161 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="title-container">
+    <h1>{{ title }}</h1>
+</div>
+<div class="container">
+
+
+    {% if director_factor %}
+        <div class="class-container">
+            {% for class_number, subjects in class_subject_map.items %}
+                <div class="class-block" onclick="toggleDropdown(this)">
+                    <h2>{{ class_number }} класс</h2>
+                    <div class="dropdown-content">
+                        {% for subject in subjects %}
+                            <a href="{% url url_name subject_id=subject.id class_id=class_number %}">
+                                {{ subject.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% for subject_id, data in subject_classes_map.items %}
+            <div class="subject-block">
+                <h2>{{ data.name }}</h2>
+                <ul>
+                    {% for class_number in data.classes %}
+                    <li>
+                        <a class="class-link" href="{% url url_name subject_id=subject_id class_id=class_number %}">
+                            {{ class_number }} класс
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<style>
+    .title-container {
+    display: flex;
+    justify-content: center; /* Выравнивание по центру */
+    align-items: center; /* Выравнивание по вертикали */
+    height: 10vh; /* Высота блока (можно регулировать) */
+    text-align: center;
+}
+
+.title-container h1 {
+    background: rgba(255, 255, 255, 0); /* Полупрозрачный фон */
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 2rem;
+    font-weight: bold;
+}
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        justify-content: center;
+    }
+
+    /* Контейнер для плиток классов */
+    .class-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    /* Плитка класса */
+    .class-block {
+        background: #e3f2fd;
+        border-left: 5px solid #1565c0;
+        padding: 15px;
+        width: 250px;
+        text-align: center;
+        border-radius: 10px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Плитка при наведении */
+    .class-block:hover {
+        background: #d1ecfc;
+        box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Скрытый список предметов */
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: white;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        z-index: 10;
+    }
+
+    /* Каждый предмет внутри списка */
+    .dropdown-content a {
+        display: block;
+        padding: 10px;
+        color: #1565c0;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+
+    /* Эффект при наведении */
+    .dropdown-content a:hover {
+        background: #d1ecfc;
+    }
+
+    /* Активное меню (разворачивается при клике) */
+    .class-block.active .dropdown-content {
+        display: block;
+    }
+
+    /* Стили для предметов */
+    .subject-block {
+        background: #f4f4f4;
+        border-left: 5px solid #0c6b3c;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    h2 {
+        color: #0c6b3c;
+    }
+
+    body {
+        background-image: url('/static/blurred_image_radius_3.png');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+</style>
+
+<script>
+    function toggleDropdown(element) {
+        // Закрываем все другие открытые dropdown
+        document.querySelectorAll('.class-block').forEach(block => {
+            if (block !== element) {
+                block.classList.remove('active');
+            }
+        });
+
+        // Переключаем активное состояние
+        element.classList.toggle('active');
+    }
+</script>
+
+{% endblock %}

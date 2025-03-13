@@ -28,7 +28,7 @@ def contacts(request):
     }
 
     # Передаем данные в шаблон
-    return render(request, 'contacts.html', {
+    return render(request, 'public_info/contacts.html', {
         'deputy_directors': deputies_data,
         'director': director_data
     })

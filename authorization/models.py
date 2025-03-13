@@ -54,6 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     birthdate = models.DateField(null=True, blank=True)
     tel = models.CharField(max_length=15, null=True, blank=True)
     avatar = models.ImageField(upload_to='avatars', null=True, blank=True)
+    about_me = models.TextField(null=True, blank=True)
 
     class_name = models.ForeignKey(Class, null=True, blank=True, on_delete=models.SET_NULL)
 
@@ -70,3 +71,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.role})"
+
+    def get_full_name_with_initials(self):
+        initials = ''
+        if self.first_name:
+            initials += f"{self.first_name[0]}."
+        if self.third_name:
+            initials += f" {self.third_name[0]}."
+        return f"{self.last_name} {initials.strip()}"

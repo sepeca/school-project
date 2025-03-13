@@ -1,0 +1,100 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<style>
+body {
+    height: 1000px;
+    background: rgba(152, 204, 177, 0.41);
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.event-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* Текстовый блок */
+#d {
+    flex: 1;
+    padding: 20px;
+    background: rgba(47, 187, 108, 0.45);
+    border-radius: 30px;
+    margin-bottom: 2px;
+    min-width: 250px;
+}
+
+/* Блок с изображением */
+.event-images {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.event-image {
+    width: 300px;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+/* Заголовок */
+h1 {
+    text-align: center;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .event-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #d, .event-images {
+        margin: 10px 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .event-image {
+        order: 2;
+    }
+
+    #d {
+        order: 1;
+    }
+}
+
+</style>
+
+<div class="container">
+    <h1>{{ event.title }}</h1>
+
+    <div class="event-wrapper">
+
+        <!-- Блок с текстом -->
+        <div id="d" class="event">
+            <p>{{ event.text }}</p>
+            <p><strong>Дата:</strong> {{ event.date }}</p>
+            <p><strong>Создатель:</strong> {{ event.get_creator }}</p>
+        </div>
+
+        <!-- Блок с изображениями -->
+        <div class="event-images">
+            {% for image in event.images.all %}
+                <img class="event-image" src="{{ image.img.url }}" alt="Изображение мероприятия">
+            {% empty %}
+                <p>Изображений нет.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

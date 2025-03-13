@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.views.decorators.csrf import csrf_protect
+
 
 from authorization.forms import LoginForm
-from mainpage.models import Article, ClassTeacher
+from mainpage.models import ClassTeacher
 from django.contrib.auth.decorators import login_required
 
 
 def do_logout(request):
     logout(request)
-    return redirect('login')
+    return redirect('news')
 
 @login_required(login_url='/lk/login/')
 def profile(request):
@@ -35,6 +35,11 @@ def profile(request):
             class_name = f"Преподает в: {', '.join(str(cls) for cls in sorted_classes)} класс(е/ах)"
         else:
             class_name = "Преподает в: Нет закрепленных классов"
+
+    if request.method == "POST" and "avatar" in request.FILES:
+        request.user.avatar = request.FILES["avatar"]
+        request.user.save()
+        return redirect("profile")
 
     return render(request, 'lk.html', {
         'full_name': f"{last_name} {first_name} {third_name}",

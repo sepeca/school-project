@@ -86,7 +86,7 @@ def class_journal(request, subject_id, class_id):
 
         return redirect(request.path)
 
-    return render(request, 'journal.html', {
+    return render(request, 'journals/journal.html', {
         'class_obj': class_obj,
         'subject_obj': subject_obj,
         'students': students,
@@ -104,10 +104,17 @@ def class_journal(request, subject_id, class_id):
 @login_required(login_url='/lk/login/')
 def my_journal(request, class_id):
     """Журнал оценок для ученика по всем предметам в выбранной четверти"""
-
+    user = request.user
     # Проверяем, что пользователь — ученик
-    if request.user.role != 'pupil':
+    if user.role != 'pupil':
         return render(request, 'no_info.html', {'message': 'Доступ запрещен'})
+
+    user_data = {
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "third_name": user.third_name,
+        "avatar": user.avatar
+    }
 
     # Получаем объект класса
     class_obj = get_object_or_404(Class, id=class_id)
@@ -153,7 +160,8 @@ def my_journal(request, class_id):
             'type': mark.type
         }
 
-    return render(request, 'my_journal.html', {
+    return render(request, 'journals/my_journal.html', {
+        'user_data': user_data,
         'class_obj': class_obj,
         'subjects': subjects,
         'lesson_dates': lesson_dates,  # Все даты четверти до сегодняшнего дня включительно

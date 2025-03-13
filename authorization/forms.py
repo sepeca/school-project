@@ -1,11 +1,8 @@
-from django import forms
 from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
-from django.forms import PasswordInput, ModelForm
-from django.core.validators import validate_email
-from urllib3 import request
-
-from mainpage.models import Article
+from django import forms
+from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from .models import User
 
 
 # форма авторизации
@@ -33,9 +30,6 @@ class LoginForm(forms.Form):
                 raise ValidationError("Неверный email или пароль.")
         return cleaned_data
 
-from django import forms
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from .models import User
 
 class CustomUserCreationForm(forms.ModelForm):
     """Форма создания пользователя в админке"""

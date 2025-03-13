@@ -1,0 +1,79 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    body {
+        background-image: url('/static/gradient_no_blur_image.png');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+        table-layout: fixed;
+    }
+
+    .schedule-table th, .schedule-table td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .schedule-table th {
+        background-color: #f4f4f4;
+    }
+
+    .lesson-number {
+        font-weight: bold;
+        background-color: #f8f9fa;
+        width: 60px;
+        min-width: 60px;
+        max-width: 80px;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .week-day {
+        width: auto;
+    }
+
+    #lesson {
+        background-color: white;
+    }
+
+
+</style>
+
+<h2>Расписание занятий {{ teacher_name }}</h2>
+
+<table class="schedule-table">
+    <thead>
+        <tr>
+            <th class="lesson-number">№</th>
+            {% for week_day in week_days_display %}
+                <th class="week-day">{{ week_day }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in schedule_data %}
+        <tr>
+            <td class="lesson-number">{{ row.lesson_number }}</td>
+            {% for lesson in row.lessons %}
+                <td id="lesson">{{ lesson|safe }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
