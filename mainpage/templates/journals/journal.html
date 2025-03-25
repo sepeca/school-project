@@ -1,0 +1,246 @@
+{% extends 'index.html' %}
+{% load filters %}
+{% load ru_date %}
+
+{% block content %}
+<style>
+body {
+        background-image: url('/static/gradient_no_blur_image.png');
+        background-repeat: no-repeat; /* фон-повтор */
+        background-attachment: fixed;/* фон-вложение */
+        background-size: cover; /* размер фона: обложка */
+     }
+/* Центрирование заголовка */
+h1 {
+    text-align: center;
+}
+
+/* Центрирование кнопок четвертей */
+.centered-btn-group {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+/* Легенда стилей + кнопки выбора типа */
+.legend-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.legend-item, .type-btn {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 5px 15px;
+    border-radius: 5px;
+    border: none;
+    transition: 0.2s;
+    font-weight: bold;
+}
+
+/* Цвета для кнопок и легенды */
+.hw, .type-btn[data-type="HW"] { background-color: yellow; }
+.clw, .type-btn[data-type="ClW"] { background-color: lightgreen; }
+.sw, .type-btn[data-type="SW"] { background-color: lightblue; }
+.cw, .type-btn[data-type="CW"] { background-color: lightcoral; }
+
+/* Подсветка активной кнопки */
+.type-btn.active {
+    outline: 2px solid black;
+}
+
+/* Окрашивание оценок в таблице */
+.hw-cell { background-color: yellow; }
+.clw-cell { background-color: lightgreen; }
+.sw-cell { background-color: lightblue; }
+.cw-cell { background-color: lightcoral; }
+.default-cell { background-color: #cccccc}
+
+/* Выравнивание всех столбцов */
+.table-responsive {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+th, td {
+    min-width: 80px;
+    max-width: 80px;
+    text-align: center;
+}
+/* Исправление select */
+td select {
+    width: 100%;
+    height: 30px;
+    text-align: center;
+    padding: 3px;
+    font-size: 16px;
+}
+
+/* Исправление наложения стилей на первый столбец */
+th:first-child, td:first-child {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 3;
+    min-width: 180px;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+}
+td:first-child:hover{
+    background-color: #e9ecef !important; /* Светло-серый фон при наведении */
+    cursor: pointer; /* Изменение курсора */
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); /* Тень для выделения */
+    transition: all 0.3s ease; /* Плавный переход */
+}
+td:first-child:active{
+    background-color: #dee2e6 !important; /* Темнее при клике */
+}
+</style>
+
+<div class="container">
+    <h1>Журнал: {{ subject_obj.name }} - {{ class_obj.number }} класс</h1>
+
+    <!-- Легенда стилей + кнопки выбора типа работы -->
+    <div class="legend-container">
+        <button type="button" class="type-btn" data-type="HW">Домашняя работа</button>
+        <button type="button" class="type-btn" data-type="ClW">Классная работа</button>
+        <button type="button" class="type-btn" data-type="SW">Самостоятельная работа</button>
+        <button type="button" class="type-btn" data-type="CW">Контрольная работа</button>
+    </div>
+
+    <!-- Блок кнопок для выбора четверти -->
+    <div class="centered-btn-group">
+        <div class="btn-group" role="group">
+            {% for quarter in quarters %}
+                <a href="?quarter={{ quarter.name }}"
+                   class="btn {% if selected_quarter_id == quarter.name %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    {{ quarter.get_name_display }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" id="selectedType" name="selected_type" value="">
+
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="position: sticky; left: 0; background: white; z-index: 2;">Фамилия Имя</th>
+                        {% for lesson_date in lesson_dates %}
+                            <th id="date-{{ lesson_date|date:'Y-m-d' }}"
+                                {% if lesson_date == today %} style="background-color: #f8d7da;"
+                                {% else %} style="background-color: white;"
+                                {% endif %}>
+                                {{ lesson_date|ru_date:"d MMM" }}<br>
+                                ({{ lesson_date|ru_date:"EEE"|lower }})
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td style="position: sticky; left: 0; background: white; z-index: 1;"
+                            data-student-id = '{{student.id}}'>
+                            {{ student.last_name }} {{ student.first_name }}
+                        </td>
+                        {% for lesson_date in lesson_dates %}
+                            {% with grade_data=grades_dict|get_item:student.id|get_item:lesson_date %}
+                                {% if grade_data %}
+                                    {% with mark=grade_data.mark type=grade_data.type %}
+                                        <td id="cell-{{ lesson_date|date:'Y-m-d' }}"
+                                            class="{% if type == 'HW' %}hw-cell
+                                                   {% elif type == 'ClW' %}clw-cell
+                                                   {% elif type == 'SW' %}sw-cell
+                                                   {% elif type == 'CW' %}cw-cell
+                                                   {% else %}default-cell{% endif %}">
+                                            <select class="form-control mark-input"
+                                                name="mark_{{ student.id }}_{{ lesson_date|date:'Y-m-d' }}">
+                                                <option value="" {% if not mark %}selected{% endif %}>—</option>
+                                                {% for m, label in mark_choices %}
+                                                <option value="{{ m }}" {% if mark == m %}selected{% endif %}>
+                                                    {{ m }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    {% endwith %}
+                                {% else %}
+                                    <td>
+                                        <select class="form-control mark-input"
+                                            name="mark_{{ student.id }}_{{ lesson_date|date:'Y-m-d' }}">
+                                            <option value="" selected>—</option>
+                                            {% for m, label in mark_choices %}
+                                            <option value="{{ m }}">{{ m }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <button type="submit" class="btn btn-success">Сохранить</button>
+    </form>
+    <div id="chat-container">
+    {% include 'journals/chat.html' %}
+    </div>
+</div>
+
+<!-- Скрипт для прокрутки таблицы вправо к последней дате -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let tableContainer = document.querySelector(".table-responsive");
+        let lastDateCell = document.querySelector("th:last-of-type");
+
+        if (tableContainer && lastDateCell) {
+            tableContainer.scrollLeft = lastDateCell.offsetLeft - 50;
+        }
+
+        // Логика выбора типа работы
+        let selectedType = "";
+        const typeButtons = document.querySelectorAll(".type-btn");
+        const hiddenInput = document.getElementById("selectedType");
+
+        typeButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                typeButtons.forEach(btn => btn.classList.remove("active"));
+                this.classList.add("active");
+
+                selectedType = this.getAttribute("data-type");
+                hiddenInput.value = selectedType;
+            });
+        });
+
+        document.querySelector("form").addEventListener("submit", function (event) {
+            if (!hiddenInput.value) {
+                alert("Выберите тип работы перед сохранением!");
+                event.preventDefault();
+            }
+        });
+    });
+        document.querySelectorAll('[data-student-id]').forEach(studentCell => {
+        studentCell.addEventListener('click', function () {
+            const studentId = this.getAttribute('data-student-id');
+            fetch(`/chat/${studentId}/`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('chat-container').innerHTML = html;
+                    initializeChat()
+                });
+        });
+    });
+</script>
+
+{% endblock %}
+

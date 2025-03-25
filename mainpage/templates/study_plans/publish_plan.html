@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<style>
+    body {
+      height: 1000px;
+      background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68));
+    }
+</style>
+<div class="container">
+    <h1>Учебный план: {{ subject.name }} - {{ class_name.number }} класс</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}  {# Рендеринг формы #}
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

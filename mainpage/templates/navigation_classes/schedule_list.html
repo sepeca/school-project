@@ -1,0 +1,67 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+<style>
+    body {
+        height: 1000px;
+        background: linear-gradient(45deg, rgba(53, 159, 103, 0.39), rgba(243, 219, 202, 0.68));
+    }
+    .teachers-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .teacher-card {
+        background-color: #f4f4f4;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .teacher-card:hover {
+        transform: scale(1.03);
+    }
+
+    .teacher-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+
+    .teacher-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #0c6b3c;
+    }
+
+    @media (max-width: 600px) {
+        .teachers-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<h2 style="text-align: center;">Список преподавателей</h2>
+
+<div class="teachers-container">
+    {% for teacher in teachers %}
+        <div class="teacher-card">
+            <a href="{% url 'schedule_by_teacher' teacher.id %}">
+            {% if teacher.avatar %}
+                <img src="{{ teacher.avatar.url }}" alt="Avatar" class="teacher-avatar">
+            {% else %}
+                <img src="{% static 'p1.jpg' %}" alt="Avatar" class="teacher-avatar">
+            {% endif %}
+            <div class="teacher-name">{{ teacher.get_full_name_with_initials }}</div>
+            </a>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

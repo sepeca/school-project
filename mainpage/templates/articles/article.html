@@ -1,0 +1,92 @@
+{% extends 'index.html' %}
+
+
+
+
+{% block content %}
+<style>
+body {
+    height: 1000px;
+    background: rgba(152, 204, 177, 0.41);
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.article-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* Текстовый блок */
+#d {
+    flex: 1;
+    padding: 20px;
+    background: rgba(47, 187, 108, 0.45);
+    border-radius: 30px;
+    margin-bottom: 2px;
+    min-width: 250px;
+}
+
+/* Блок с изображением */
+.article-image {
+    width: 300px;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-left: 20px;
+}
+
+/* Заголовок */
+h1 {
+    text-align: center;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .article-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #d, .article-image {
+        margin: 10px 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .article-image {
+        order: 2; /* Картинка после текста */
+    }
+
+    #d {
+        order: 1; /* Текст перед картинкой */
+    }
+}
+
+</style>
+<div class="container">
+    <h1>{{ article.title }}</h1>
+
+    <div class="article-wrapper">
+
+        <!-- Блок с текстом -->
+        <div id="d" class="article">
+            <p>{{ article.text }}</p>
+        </div>
+
+        <!-- Блок с изображением -->
+        {% if article.url %}
+            <img class="article-image" src="{{ article.url.url }}" alt="Изображение">
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+{% endblock %}
