@@ -28,19 +28,65 @@
         font-size: 12px;
         color: #888;
     }
+        /* Стилизация input */
+    #message-input {
+        width: calc(100% - 120px);
+        padding: 10px 15px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    #message-input:focus {
+        border-color: #0c6b3c;
+        box-shadow: 0 0 5px rgba(12, 107, 60, 0.5);
+    }
+
+    /* Стилизация кнопки */
+    #send-button {
+        padding: 10px 20px;
+        margin-left: 10px;
+        background-color: #0c6b3c;
+        color: #fff;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 14px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    #send-button:hover {
+        background-color: #0a5c34;
+        transform: scale(1.05);
+    }
+
+    #send-button:active {
+        transform: scale(0.95);
+    }
+
+    /* Общий блок для формы */
+    .chat-input-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
 </style>
 
-<div id="chat-box" data-student-id="{{ student_id }}">
-    {% if student %}
-    <p>Выбран: <b>{{ student.last_name }} {{ student.first_name }}</b></p>
+<div id="chat-box" data-interlocutor-id="{{ interlocutor_id }}">
+    {% if interlocutor %}
+    <p>Выбран: <b>{{ interlocutor.last_name }} {{ interlocutor.first_name }}</b></p>
     {% else %}
-    <p id="no-student-message">Ученик не выбран, кликните на его имя в таблице.</p>
+    <p id="no-student-message">{{role}} не выбран, кликните на него в таблице.</p>
     {% endif %}
-
 </div>
 
 
-<div style="margin-top: 10px;">
+<div class="chat-input-container">
     <input type="text" id="message-input" placeholder="Введите сообщение...">
     <button id="send-button">Отправить</button>
 </div>
@@ -52,8 +98,8 @@
         console.log('Скрипт чата инициализирован'); // Проверка
 
         const chatBox = document.getElementById('chat-box');
-        const studentId = chatBox.getAttribute('data-student-id');
-        console.log(studentId)
+        const interlocutorId = chatBox.getAttribute('data-interlocutor-id');
+        console.log(interlocutorId)
 
         const inputField = document.getElementById('message-input');
         if (inputField) {
@@ -103,9 +149,9 @@
         // Хранит уже отображённые timestamps
 
         function fetchMessages() {
-            if (!studentId) return;
+            if (!interlocutorId) return;
 
-            fetch(`/get_messages/${studentId}/?last_timestamp=${lastTimestamp}`)
+            fetch(`/get_messages/${interlocutorId}/?last_timestamp=${lastTimestamp}`)
                 .then(response => response.json())
                 .then(data => {
                     let newLastTimestamp = lastTimestamp;
@@ -134,7 +180,7 @@
 
                 const csrfToken = '{{ csrf_token }}';
 
-                if (!studentId) {
+                if (!interlocutorId) {
                     return;
                 }
 
@@ -143,7 +189,7 @@
                     return;
                 }
 
-                fetch(`/send_message/${studentId}/`, {
+                fetch(`/send_message/${interlocutorId}/`, {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': csrfToken,
@@ -167,7 +213,7 @@
         });
 
         // Инициализация получения сообщений при загрузке
-        if (studentId) {
+        if (interlocutorId) {
             fetchMessages();
         }
     }

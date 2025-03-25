@@ -71,7 +71,6 @@ th, td {
     max-width: 80px;
     text-align: center;
 }
-
 /* Исправление select */
 td select {
     width: 100%;
@@ -86,9 +85,18 @@ th:first-child, td:first-child {
     position: sticky;
     left: 0;
     background: white;
-    z-index: 2;
+    z-index: 3;
     min-width: 180px;
     box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+}
+td:first-child:hover{
+    background-color: #e9ecef !important; /* Светло-серый фон при наведении */
+    cursor: pointer; /* Изменение курсора */
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); /* Тень для выделения */
+    transition: all 0.3s ease; /* Плавный переход */
+}
+td:first-child:active{
+    background-color: #dee2e6 !important; /* Темнее при клике */
 }
 </style>
 
@@ -138,7 +146,8 @@ th:first-child, td:first-child {
                 <tbody>
                     {% for student in students %}
                     <tr>
-                        <td style="position: sticky; left: 0; background: white; z-index: 1;" data-student-id = '{{student.id}}'>
+                        <td style="position: sticky; left: 0; background: white; z-index: 1;"
+                            data-student-id = '{{student.id}}'>
                             {{ student.last_name }} {{ student.first_name }}
                         </td>
                         {% for lesson_date in lesson_dates %}
@@ -210,7 +219,6 @@ th:first-child, td:first-child {
 
                 selectedType = this.getAttribute("data-type");
                 hiddenInput.value = selectedType;
-                console.log("Выбранный тип:", selectedType);
             });
         });
 

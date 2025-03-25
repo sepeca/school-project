@@ -68,6 +68,15 @@ h1 {
     flex-grow: 1; /* Таблица занимает оставшееся место */
     overflow-x: auto; /* Прокрутка, если таблица большая */
 }
+td:first-child:hover{
+    background-color: #e9ecef !important; /* Светло-серый фон при наведении */
+    cursor: pointer; /* Изменение курсора */
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); /* Тень для выделения */
+    transition: all 0.3s ease; /* Плавный переход */
+}
+td:first-child:active{
+    background-color: #dee2e6 !important; /* Темнее при клике */
+}
 </style>
 
 <div class="container">
@@ -124,7 +133,10 @@ h1 {
                     <tbody>
                         {% for subject in subjects %}
                         <tr>
-                            <td style="position: sticky; left: 0; background: white; z-index: 1;">{{ subject.name }}</td>
+                            <td style="position: sticky; left: 0; background: white; z-index: 1;"
+                            data-teacher-id="{{ teacher_ids|get_item:subject.id }}">
+                                {{ subject.name }}
+                            </td>
                             {% for lesson_date in lesson_dates %}
                                 {% with grade_data=grades_dict|get_item:subject.id|get_item:lesson_date %}
                                     {% if grade_data %}
@@ -150,6 +162,9 @@ h1 {
             </div>
         </div>
     </div>
+    <div id="chat-container">
+    {% include 'journals/chat.html' %}
+    </div>
 </div>
 
 <!-- Скрипт для прокрутки таблицы вправо к последней дате -->
@@ -161,6 +176,17 @@ h1 {
         if (tableContainer && lastDateCell) {
             tableContainer.scrollLeft = lastDateCell.offsetLeft - 50;
         }
+    });
+    document.querySelectorAll('[data-teacher-id]').forEach(teacherCell => {
+        teacherCell.addEventListener('click', function () {
+            const teacherId = this.getAttribute('data-teacher-id');
+            fetch(`/chat/${teacherId}/`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('chat-container').innerHTML = html;
+                    initializeChat()
+                });
+        });
     });
 </script>
 

@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from authorization.models import User
-from mainpage.models import Mark, Class, Subject, Quarter
+from mainpage.models import Mark, Class, Subject, Quarter, ClassTeacher
 
 from django.shortcuts import render, get_object_or_404
 import locale
@@ -124,7 +124,11 @@ def my_journal(request, class_id):
 
     # Получаем список всех предметов, по которым есть оценки
     subjects = Subject.objects.filter(marks_subject__pupil=request.user).distinct()
-
+    # Сопоставление предмета с id учителя
+    teacher_ids = {
+        subject.id: ClassTeacher.objects.filter(class_name=class_obj, subject=subject).first().teacher.id
+        for subject in subjects
+    }
     # Определяем текущую дату
     today = date.today()
     if today.weekday() == 6:  # Если воскресенье, то берем субботу
@@ -168,4 +172,5 @@ def my_journal(request, class_id):
         'grades_dict': grades_dict,
         'quarters': Quarter.objects.all(),
         'selected_quarter_id': int(selected_quarter_id),
+        'teacher_ids': teacher_ids,
     })

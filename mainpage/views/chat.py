@@ -9,18 +9,30 @@ from django.utils.dateparse import parse_datetime
 
 
 @login_required
-def private_chat(request, student_id):
-    student = get_object_or_404(User, id=student_id, role='pupil')
+def private_chat(request, interlocutor_id):
+    user_role = request.user.role
+    if user_role == "teacher":
+        role = "Ученик"
+    elif user_role == "pupil":
+        role = "Учитель"
+    else:
+       role = None
+
+    if role is None:
+        return
+
+    interlocutor = get_object_or_404(User, id=interlocutor_id)
+
 
     # Получаем входящие и исходящие сообщения
     messages_in = PrivateMessage.objects.filter(
-        sender=student,
+        sender=interlocutor,
         receiver=request.user
     ).annotate(direction=models.Value('in', output_field=models.CharField()))
 
     messages_out = PrivateMessage.objects.filter(
         sender=request.user,
-        receiver=student
+        receiver=interlocutor
     ).annotate(direction=models.Value('out', output_field=models.CharField()))
 
     # Объединяем и сортируем сообщения по времени
@@ -32,8 +44,9 @@ def private_chat(request, student_id):
 
 
     return render(request, 'journals/chat.html', {
-        'student': student,
-        'student_id': student_id,
+        'interlocutor': interlocutor,
+        'interlocutor_id': interlocutor_id,
+        'role':role,
         'messages': messages,
     })
 
@@ -53,7 +66,7 @@ def send_private_message(request, receiver_id):
 
 
 @login_required
-def get_private_messages(request, student_id):
+def get_private_messages(request, interlocutor_id):
     """Получение новых сообщений (Long Polling)"""
     last_timestamp = request.GET.get('last_timestamp')
     timeout = 30
@@ -61,8 +74,8 @@ def get_private_messages(request, student_id):
 
     while time.time() - start_time < timeout:
         messages_query = PrivateMessage.objects.filter(
-            models.Q(sender=request.user, receiver_id=student_id) |
-            models.Q(sender_id=student_id, receiver=request.user)
+            models.Q(sender=request.user, receiver_id=interlocutor_id) |
+            models.Q(sender_id=interlocutor_id, receiver=request.user)
         ).order_by('timestamp')
 
         # Фильтрация сообщений по timestamp
@@ -76,7 +89,7 @@ def get_private_messages(request, student_id):
                 'user': msg.sender.get_full_name_with_initials(),
                 'message': msg.message,
                 'timestamp': msg.timestamp.isoformat(),
-                'direction': 'in' if msg.sender_id == student_id else 'out'
+                'direction': 'in' if msg.sender_id == interlocutor_id else 'out'
             } for msg in messages_query]
 
             return JsonResponse({'messages': data})

@@ -31,7 +31,7 @@ urlpatterns = [
     path('schedule/<int:teacher_id>/', views.schedule, name='schedule_by_teacher'),
 ]
 urlpatterns += [
-    path('chat/<int:student_id>/', views.private_chat, name='private_chat'),
+    path('chat/<int:interlocutor_id>/', views.private_chat, name='private_chat'),
     path('send_message/<int:receiver_id>/', views.send_private_message, name='send_private_message'),
-    path('get_messages/<int:student_id>/', views.get_private_messages, name='get_private_messages'),
+    path('get_messages/<int:interlocutor_id>/', views.get_private_messages, name='get_private_messages'),
 ]
